@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFF8F5">
+<title>オーケストラのゲーム</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&display=swap">
+<style>
+  /* Material Design 3（元の色 #8B5A2B のライトテーマ） */
+  :root {
+    --md-sys-color-primary: #85532F;
+    --md-sys-color-on-primary: #FFFFFF;
+    --md-sys-color-primary-container: #FFDCC5;
+    --md-sys-color-on-primary-container: #6A3C1A;
+    --md-sys-color-surface: #FFF8F5;
+    --md-sys-color-surface-container-low: #FCF2EC;
+    --md-sys-color-surface-container-highest: #EAE0DA;
+    --md-sys-color-on-surface: #221A15;
+    --md-sys-color-on-surface-variant: #52443C;
+    --md-sys-elevation-1: 0 1px 2px rgba(0,0,0,.30), 0 1px 3px 1px rgba(0,0,0,.15);
+    --md-sys-elevation-2: 0 1px 2px rgba(0,0,0,.30), 0 2px 6px 2px rgba(0,0,0,.15);
+    --font: "M PLUS Rounded 1c", system-ui, sans-serif;
+  }
+  html, body { margin: 0; background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); font-family: var(--font); }
+  header { padding: 32px 16px 8px; max-width: 720px; margin: 0 auto; }
+  h1 { margin: 0; font: 800 28px/36px var(--font); color: var(--md-sys-color-primary); }
+  main { max-width: 720px; margin: 0 auto; padding: 16px; display: grid; gap: 16px;
+         grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .card {
+    display: block; text-decoration: none; color: inherit; overflow: hidden;
+    border-radius: 28px; background: var(--md-sys-color-surface-container-low);
+    box-shadow: var(--md-sys-elevation-1); position: relative;
+    transition: box-shadow 200ms cubic-bezier(.2,0,0,1);
+  }
+  .card::after { content: ""; position: absolute; inset: 0; background: var(--md-sys-color-on-surface); opacity: 0; transition: opacity 200ms linear; }
+  .card:hover { box-shadow: var(--md-sys-elevation-2); }
+  .card:hover::after { opacity: .08; }
+  .card:active::after { opacity: .12; }
+  .card:focus-visible { outline: 3px solid var(--md-sys-color-primary); outline-offset: 2px; }
+  .thumb {
+    height: 160px; display: flex; align-items: flex-end; justify-content: center; gap: 4px; padding-top: 16px;
+    background: linear-gradient(#BFE3F2 0 45%, #DCCBA6 45%);
+  }
+  .thumb img { height: 120px; }
+  .thumb img.s { height: 96px; }
+  .body { padding: 16px 20px 20px; }
+  .body h2 { margin: 0 0 4px; font: 800 22px/28px var(--font); }
+  .body p { margin: 0; font: 500 14px/20px var(--font); color: var(--md-sys-color-on-surface-variant); }
+</style>
+</head>
+<body>
+<header><h1>オーケストラのゲーム</h1></header>
+<main id="list"></main>
+<script>
+  // ゲームを足す時は、ここに 1 行足す
+  const GAMES = [
+    { path: 'street-td/', title: 'まちかどオーケストラ', desc: '3さいから。がっきを ならべて、まちの ひとを あつめよう',
+      thumbs: ['street-td/assets/img/violin.png', 'street-td/assets/img/horn.png', 'street-td/assets/img/flute.png', 'street-td/assets/img/timpani.png'] },
+  ];
+  const list = document.getElementById('list');
+  for (const g of GAMES) {
+    const a = document.createElement('a');
+    a.className = 'card'; a.href = g.path;
+    const thumb = document.createElement('div'); thumb.className = 'thumb';
+    g.thumbs.forEach((src, i) => { const im = new Image(); im.src = src; im.alt = ''; if (i % 2) im.className = 's'; thumb.append(im); });
+    const body = document.createElement('div'); body.className = 'body';
+    const h = document.createElement('h2'); h.textContent = g.title;
+    const p = document.createElement('p'); p.textContent = g.desc;
+    body.append(h, p); a.append(thumb, body); list.append(a);
+  }
+</script>
+</body>
+</html>
