@@ -42,7 +42,33 @@ let mode = 'title'; // title / play / photo
 let paused = false;
 let photoAt = 0;
 
-const game = new Game(cv, images, { audio: mixer, onGauge, onFinaleEnd: showPhoto });
+// ---------- タイムアタック ----------
+// 開始から、ファゴットまで全楽器が出そろう（クリアの）瞬間までの時間。一時停止中・画面を消している間は止まる。
+const BEST_KEY = 'cc_orchestra_td.street-td.best';
+let playTime = 0, clearTime = 0, timerRunning = false;
+const fmt = (sec) => {
+  const t = Math.floor(sec * 10), m = Math.floor(t / 600), s = Math.floor(t / 10) % 60;
+  return `${m}:${String(s).padStart(2, '0')}.${t % 10}`;
+};
+function loadBest() {
+  try { const v = parseFloat(localStorage.getItem(BEST_KEY)); return v > 0 ? v : null; } catch { return null; }
+}
+function saveBest(sec) {
+  if (C.FAST) return; // 調整用モードの記録は残さない
+  try { localStorage.setItem(BEST_KEY, String(sec)); } catch {}
+}
+function showBest(el) {
+  const b = loadBest();
+  el.hidden = !b;
+  if (b) el.querySelector('.t').textContent = fmt(b);
+}
+function onClear() {
+  timerRunning = false;
+  clearTime = playTime;
+  $('#timer .t').textContent = fmt(clearTime);
+}
+
+const game = new Game(cv, images, { audio: mixer, onGauge, onFinaleEnd: showPhoto, onClear });
 
 function showTitle() {
   mode = 'title';
@@ -50,6 +76,7 @@ function showTitle() {
   $('#hud').hidden = true; $('#photo').hidden = true; $('#pausedlg').hidden = true;
   $('#title').hidden = false;
   paused = false;
+  showBest($('#titlebest'));
   game.reset(true);
 }
 
@@ -58,12 +85,21 @@ function startGame() {
   $('#title').hidden = true; $('#hud').hidden = false;
   game.reset(false);
   mixer.start(C.START_STAGE);
+  playTime = 0; clearTime = 0; timerRunning = true;
+  $('#timer .t').textContent = fmt(0);
+  showBest($('#hudbest'));
 }
 
 function showPhoto() {
   mode = 'photo';
   mixer.stopAll(0.6);
   renderPhoto($('#photocanvas'));
+  const prev = loadBest();
+  const isNew = clearTime > 0 && (!prev || clearTime < prev);
+  if (isNew) saveBest(clearTime);
+  $('#restime .t').textContent = fmt(clearTime);
+  $('#resbest .t').textContent = fmt(isNew ? clearTime : prev);
+  $('#resbest').classList.toggle('newrec', isNew);
   $('#photo').hidden = false;
   photoAt = performance.now() + C.PHOTO_TAP_DELAY * 1000;
 }
@@ -146,16 +182,24 @@ function renderPhoto(c) {
 
 // ---------- ループ ----------
 let last = performance.now();
+let shownTenth = -1;
 function frame(now) {
-  const dt = Math.min(0.05, (now - last) / 1000);
+  const raw = (now - last) / 1000;
+  const dt = Math.min(0.05, raw);
   last = now;
   if (!paused && !document.hidden && mode !== 'photo') game.update(dt);
+  if (timerRunning && !paused && !document.hidden && mode === 'play') {
+    playTime += Math.min(raw, 0.5);
+    const tenth = Math.floor(playTime * 10);
+    if (tenth !== shownTenth) { shownTenth = tenth; $('#timer .t').textContent = fmt(playTime); }
+  }
   game.render(scale * dpr);
   requestAnimationFrame(frame);
 }
 
 addEventListener('resize', fit);
 fit();
+showBest($('#titlebest'));
 Promise.all([imagesReady, audioReady]).then(() => {
   ready = true;
   $('#loading').hidden = true; $('#tapcue').hidden = false;
