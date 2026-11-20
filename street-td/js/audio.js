@@ -100,16 +100,6 @@ export class Mixer {
     this._ramp(this.gains[name].gain, level, fade);
   }
 
-  // 台の楽器をタップした時：一瞬だけ大きく
-  boost(name) {
-    if (!this.started || !this.level[name] || !this.gains[name]) return;
-    const p = this.gains[name].gain, t = this.ctx.currentTime, base = this.level[name];
-    p.cancelScheduledValues(t);
-    p.setValueAtTime(p.value, t);
-    p.linearRampToValueAtTime(base * 1.9, t + 0.08);
-    p.linearRampToValueAtTime(base, t + 0.9);
-  }
-
   // ループの中での再生位置（秒）
   position() {
     if (!this.started) return 0;

@@ -27,29 +27,34 @@ export const INSTRUMENTS = {
   timpani:    { group: 'brass',   h: 80 },
 };
 
-export const START_ON_STAGE = ['violin', 'flute'];
-export const START_ON_BENCH = ['horn'];
+// 待機枠（持っている楽器の一覧）。台に置いても待機枠からは消えず、同じ楽器を何台にも置ける。
+export const START_PALETTE = ['violin', 'flute', 'horn'];
+export const START_STAGE = ['violin'];   // 台 1 つから始まる
 export const UNLOCK_ORDER = ['viola', 'oboe', 'trumpet', 'cello', 'clarinet', 'timpani', 'contrabass'];
 
 // 扇形のひな壇。並びは「台が現れる順番」（前列の中央から）。
 // x, y は楽器の足元。s は奥行きによる縮尺。
 export const SLOTS = [
+  { x: 180, y: 274, s: 0.9 },  // 中列 中央（最初の台）
   { x: 136, y: 352, s: 1.0 },  // 前列 中央左
   { x: 224, y: 352, s: 1.0 },  // 前列 中央右
-  { x: 52,  y: 340, s: 1.0 },  // 前列 左端
-  { x: 308, y: 340, s: 1.0 },  // 前列 右端
-  { x: 180, y: 274, s: 0.9 },  // 中列 中央
   { x: 92,  y: 266, s: 0.9 },  // 中列 左
   { x: 268, y: 266, s: 0.9 },  // 中列 右
+  { x: 52,  y: 340, s: 1.0 },  // 前列 左端
+  { x: 308, y: 340, s: 1.0 },  // 前列 右端
   { x: 180, y: 200, s: 0.8 },  // 後列 中央
-  { x: 118, y: 194, s: 0.8 },  // 後列 左
-  { x: 242, y: 194, s: 0.8 },  // 後列 右
+  { x: 118, y: 194, s: 0.8 },  // 後列 左（クリア時のみ）
+  { x: 242, y: 194, s: 0.8 },  // 後列 右（クリア時のみ）
 ];
 
-export const BENCH = { y: 462, x0: 56, dx: 62, s: 0.62 };
-export const BASSOON_SPOT = { x: 314, y: 462, h: 70 };   // トレイ右端の「？」シルエット
-export const BASSOON_STAGE = { x: 180, y: 382, h: 78 };  // クリア時に出てくる場所
-export const GAUGE_TARGET = { x: 250, y: 32 };           // 音符が飛んでいく先
+// 待機枠のトレイ：6 列 × 2 段。左上から楽器が増えた順に並び、12 マス目がファゴットの「？」
+export const PALETTE = { cols: 6, x0: 50, dx: 52, rows: [452, 518], cellW: 48, cellH: 60, maxH: 54, maxW: 42 };
+export const BASSOON_CELL = 11;
+export const BASSOON_STAGE = { x: 180, y: 384, h: 78 };  // クリア時に出てくる場所
+export const GAUGE_TARGET = { x: 250, y: 32 };           // ハートが飛んでいく先
+export const MAX_PLAY_SLOTS = 8;                         // 遊んでいる間の台の上限（クリアで 10 台）
+// クリア時の並び（台の番号 → 楽器）。弦が前、木管が中、金管と打楽器が後ろ。
+export const FINALE_LAYOUT = ['oboe', 'viola', 'cello', 'flute', 'clarinet', 'violin', 'contrabass', 'timpani', 'horn', 'trumpet'];
 
 // 通り
 export const LANES = [636, 684];         // 通行人の足元の y
@@ -61,17 +66,17 @@ export const MAX_PEOPLE = 9;
 export const MAX_LISTENERS = 6;
 
 export const RAINBOW_RATE = 0.15;
-export const BENCH_COLOR_RATE = 0.40;
+export const REST_COLOR_RATE = 0.40;   // 待機枠にあって舞台にいない色
 
 export const LISTEN_BASE = 3.0;    // 立ち止まって聴く秒数の基本
 export const LISTEN_PER = 1.5;     // 好きな色の楽器 1 体ごとに延びる秒数
 export const LISTEN_MAX = 9.0;
-export const NOTE_EVERY = 1.0;     // 聴いている人が音符を出す間隔（秒）
+export const HEART_EVERY = 1.0;    // 聴いている人がハートを出す間隔（秒）
+export const NOTE_EVERY = 1.3;     // 演奏中の楽器が音符を出す間隔（秒、見た目だけ）
 
-// 仲間 1 体ぶんに必要な音符の数（何体目か順）。
-// 楽器が増えるほど観客が長く聴くので、後ほど多くして「約 40 秒に 1 体・全体で約 5 分」に揃える。
-// （自動で上手に遊ぶシミュレーションで調整。何もしなくても 7 分前後でクリアできる）
-export const NOTES_PER_UNLOCK = [54, 60, 65, 71, 77, 82, 88];
+// ゲージ 1 回ぶんに必要なハートの数（何回目か順）。7 回で楽器がそろい、8 回目でクリア。
+// 自動で上手に遊ぶシミュレーションで「約 25 秒に 1 回」に揃えた。
+export const HEARTS_PER_FILL = [24, 30, 36, 42, 48, 54, 60, 66];
 
 export const HINT_FIRST_DELAY = 3.0;
 export const HINT_IDLE = 7.0;
