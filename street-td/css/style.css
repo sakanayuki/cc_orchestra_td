@@ -107,3 +107,19 @@ html, body {
   margin: 10px 0 4px; font: 800 32px/40px var(--md-ref-typeface-brand);
   color: var(--md-sys-color-primary);
 }
+
+/* タイムアタック */
+#timer, #hudbest { position: absolute; top: 60px; box-shadow: var(--md-sys-elevation-1); border: 0; }
+#timer { left: 12px; }
+#hudbest { left: 118px; }
+.crown { fill: #C99A00 !important; }
+#titlebest { margin-top: 10px; border: 0; background: var(--md-sys-color-surface-container-lowest); }
+.photo-card h2 { margin-bottom: 8px; }
+.photo-card .result { display: flex; justify-content: center; gap: 8px; margin-bottom: 8px; }
+.photo-card .result .m3-chip { border: 0; background: var(--md-sys-color-surface-container-high); }
+/* 記録を更新した時：最高記録のチップを tertiary container で光らせる */
+#resbest.newrec {
+  background: var(--md-sys-color-tertiary-container); color: var(--md-sys-color-on-tertiary-container);
+  animation: newrec 0.9s var(--md-sys-motion-easing-emphasized) infinite alternate;
+}
+@keyframes newrec { from { transform: scale(1); } to { transform: scale(1.12); box-shadow: 0 0 0 6px rgba(201,154,0,.25); } }

@@ -354,6 +354,7 @@ export class Game {
   _startFinale() {
     this.state = 'finale';
     if (!this.demo && this.hooks.onGauge) this.hooks.onGauge(1, null);
+    if (!this.demo && this.hooks.onClear) this.hooks.onClear();
     this.sel = null; this.hint = null;
     const remain = this.audio ? this.audio.finale(C.FINALE_MIN_REMAIN) : 20;
     this.finaleEnd = this.time + remain;
