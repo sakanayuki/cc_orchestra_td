@@ -1,0 +1,138 @@
+/*
+ * Material Design 3 のトークンと、このゲームで使う部品だけを CSS で実装したもの。
+ * 配色は元の色 #8B5A2B（バイオリンの木の色）から、M3 の tonal spot 方式の考え方で作ったライトテーマ。
+ * 子ども向けで暗い部屋でも明るさを変えないため、ダークテーマは持たない。
+ */
+:root {
+  /* color roles */
+  --md-sys-color-primary: #85532F;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #FFDCC5;
+  --md-sys-color-on-primary-container: #6A3C1A;
+  --md-sys-color-secondary: #755846;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #FFDCC5;
+  --md-sys-color-on-secondary-container: #5C4130;
+  --md-sys-color-tertiary: #616133;
+  --md-sys-color-tertiary-container: #E7E6AC;
+  --md-sys-color-on-tertiary-container: #49491E;
+  --md-sys-color-surface: #FFF8F5;
+  --md-sys-color-surface-container-lowest: #FFFFFF;
+  --md-sys-color-surface-container-low: #FCF2EC;
+  --md-sys-color-surface-container: #F6ECE6;
+  --md-sys-color-surface-container-high: #F0E6E0;
+  --md-sys-color-surface-container-highest: #EAE0DA;
+  --md-sys-color-on-surface: #221A15;
+  --md-sys-color-on-surface-variant: #52443C;
+  --md-sys-color-outline: #84746A;
+  --md-sys-color-outline-variant: #D7C3B8;
+  --md-sys-color-scrim: #000000;
+  --md-sys-color-shadow: #000000;
+
+  /* shape */
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full: 9999px;
+
+  /* elevation */
+  --md-sys-elevation-1: 0 1px 2px rgba(0,0,0,.30), 0 1px 3px 1px rgba(0,0,0,.15);
+  --md-sys-elevation-2: 0 1px 2px rgba(0,0,0,.30), 0 2px 6px 2px rgba(0,0,0,.15);
+  --md-sys-elevation-3: 0 4px 8px 3px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.30);
+
+  /* motion */
+  --md-sys-motion-easing-emphasized: cubic-bezier(.2, 0, 0, 1);
+  --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(.05, .7, .1, 1);
+  --md-sys-motion-easing-standard: cubic-bezier(.2, 0, 0, 1);
+  --md-sys-motion-duration-short4: 200ms;
+  --md-sys-motion-duration-medium2: 300ms;
+  --md-sys-motion-duration-long2: 500ms;
+
+  /* typography */
+  --md-ref-typeface-brand: "M PLUS Rounded 1c", system-ui, sans-serif;
+  --md-ref-typeface-plain: "M PLUS Rounded 1c", system-ui, sans-serif;
+}
+
+.m3-surface-container { background: var(--md-sys-color-surface-container); }
+.m3-surface-container-high { background: var(--md-sys-color-surface-container-high); }
+
+/* Linear progress indicator（太めにした determinate） */
+.m3-linear-progress .track {
+  position: relative; height: 12px; border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-secondary-container); overflow: hidden;
+}
+.m3-linear-progress .indicator {
+  position: absolute; inset: 0 auto 0 0; width: 0%;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-primary);
+  transition: width var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+.m3-linear-progress .track::after { /* stop indicator */
+  content: ""; position: absolute; right: 3px; top: 3px; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--md-sys-color-primary);
+}
+
+/* Circular progress indicator（indeterminate） */
+.m3-circular-progress { width: 48px; height: 48px; }
+.m3-circular-progress svg { width: 100%; height: 100%; animation: m3-rotate 1.4s linear infinite; }
+.m3-circular-progress circle {
+  fill: none; stroke: var(--md-sys-color-primary); stroke-width: 4; stroke-linecap: round;
+  stroke-dasharray: 90 126; animation: m3-dash 1.4s var(--md-sys-motion-easing-standard) infinite;
+}
+@keyframes m3-rotate { to { transform: rotate(360deg); } }
+@keyframes m3-dash {
+  0% { stroke-dasharray: 10 126; stroke-dashoffset: 0; }
+  50% { stroke-dasharray: 90 126; stroke-dashoffset: -20; }
+  100% { stroke-dasharray: 10 126; stroke-dashoffset: -125; }
+}
+
+/* Icon button（standard） */
+.m3-icon-button {
+  position: relative; width: 40px; height: 40px; border: 0; padding: 8px;
+  border-radius: var(--md-sys-shape-corner-full); background: transparent;
+  color: var(--md-sys-color-on-surface-variant); cursor: pointer;
+}
+.m3-icon-button::before { /* state layer */
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  background: currentColor; opacity: 0;
+  transition: opacity var(--md-sys-motion-duration-short4) linear;
+}
+.m3-icon-button:active::before { opacity: .12; }
+.m3-icon-button .icon { width: 24px; height: 24px; fill: currentColor; display: block; }
+
+/* Buttons */
+.m3-button {
+  height: 40px; padding: 0 24px; border: 0; border-radius: var(--md-sys-shape-corner-full);
+  font: 500 14px/20px var(--md-ref-typeface-plain); letter-spacing: .1px; cursor: pointer;
+  position: relative; overflow: hidden;
+}
+.m3-button::before {
+  content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0;
+  transition: opacity var(--md-sys-motion-duration-short4) linear;
+}
+.m3-button:active::before { opacity: .12; }
+.m3-button.filled { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+.m3-button.text { background: transparent; color: var(--md-sys-color-primary); padding: 0 12px; }
+
+/* Dialog と scrim */
+.m3-scrim {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  background: rgb(0 0 0 / .32);
+  animation: m3-fade var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+.m3-scrim[hidden] { display: none; }
+.m3-dialog {
+  min-width: 280px; max-width: 320px; padding: 24px; box-sizing: border-box;
+  border-radius: var(--md-sys-shape-corner-extra-large);
+  background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);
+  box-shadow: var(--md-sys-elevation-3);
+  animation: m3-pop var(--md-sys-motion-duration-long2) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+.m3-card {
+  border-radius: var(--md-sys-shape-corner-extra-large);
+  background: var(--md-sys-color-surface-container-low); box-shadow: var(--md-sys-elevation-2);
+  animation: m3-pop var(--md-sys-motion-duration-long2) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+@keyframes m3-fade { from { opacity: 0; } }
+@keyframes m3-pop { from { opacity: 0; transform: scale(.85); } }

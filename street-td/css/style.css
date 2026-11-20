@@ -1,0 +1,109 @@
+/* 画面は 360×720 の仮想座標で組み、JS が端末の大きさに合わせて #stage を拡大縮小する */
+html, body {
+  margin: 0; height: 100%; overflow: hidden;
+  background: var(--md-sys-color-surface-container-highest);
+  font-family: var(--md-ref-typeface-plain);
+  -webkit-user-select: none; user-select: none;
+  -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
+  touch-action: none; overscroll-behavior: none;
+}
+#viewport { position: fixed; inset: 0; overflow: hidden; }
+#stage {
+  position: absolute; left: 0; top: 0; width: 360px; height: 720px;
+  transform-origin: 0 0; overflow: hidden;
+  background: var(--md-sys-color-surface);
+}
+#bg, #game { position: absolute; left: 0; top: 0; width: 360px; height: 720px; }
+#game { touch-action: none; }
+
+/* 待機列のトレイ（M3 の surface container） */
+#tray {
+  position: absolute; left: 10px; right: 10px; top: 386px; height: 84px;
+  border-radius: var(--md-sys-shape-corner-extra-large);
+  box-shadow: var(--md-sys-elevation-1);
+  pointer-events: none;
+}
+
+/* HUD: 観客ゲージと一時停止ボタン */
+#hud { position: absolute; left: 0; right: 0; top: 0; height: 64px; pointer-events: none; }
+#hud[hidden] { display: none; }
+#gauge {
+  position: absolute; left: 12px; right: 60px; top: 12px; height: 40px;
+  display: flex; align-items: center; gap: 8px; padding: 0 8px 0 16px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-surface-container-low); box-shadow: var(--md-sys-elevation-1);
+}
+#gauge .track { flex: 1; }
+#gauge .next {
+  width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--md-sys-color-surface-container-highest); overflow: hidden;
+}
+#gauge .next[hidden] { display: none; }
+#gauge .next img { height: 28px; filter: brightness(0) opacity(.45); }
+#gauge .next.reveal img { filter: none; }
+#gauge.full .indicator { background: var(--md-sys-color-tertiary); }
+
+#pause {
+  position: absolute; right: 10px; top: 12px; pointer-events: auto;
+  background: var(--md-sys-color-surface-container-low); box-shadow: var(--md-sys-elevation-1);
+}
+#pause .ring {
+  position: absolute; inset: 0; width: 40px; height: 40px; transform: rotate(-90deg);
+  pointer-events: none;
+}
+#pause .ring circle {
+  fill: none; stroke: var(--md-sys-color-primary); stroke-width: 3;
+  stroke-dasharray: 113.1; stroke-dashoffset: 113.1;
+}
+#pause.holding .ring circle { stroke-dashoffset: 0; transition: stroke-dashoffset 2s linear; }
+
+/* タイトル */
+#title { position: absolute; inset: 0; pointer-events: none; }
+#title[hidden] { display: none; }
+#title .logo {
+  position: absolute; left: 24px; right: 24px; top: 40px; padding: 20px 12px;
+  border-radius: var(--md-sys-shape-corner-extra-large); box-shadow: var(--md-sys-elevation-2);
+  text-align: center; color: var(--md-sys-color-on-primary-container);
+  background: var(--md-sys-color-primary-container);
+  animation: m3-pop var(--md-sys-motion-duration-long2) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+#title h1 {
+  margin: 0; font: 800 36px/44px var(--md-ref-typeface-brand); letter-spacing: 1px;
+}
+#title .notes {
+  position: absolute; top: 14px; left: 18px; font-size: 28px; color: var(--md-sys-color-primary);
+  animation: bob 1.2s ease-in-out infinite alternate;
+}
+#title .notes.r { left: auto; right: 18px; top: 60px; animation-delay: .6s; }
+@keyframes bob { to { transform: translateY(-8px) rotate(-10deg); } }
+#title .start {
+  position: absolute; left: 0; right: 0; bottom: 64px; display: grid; place-items: center;
+}
+#title .tap { position: relative; width: 72px; height: 72px; display: grid; place-items: center; }
+#title .tap[hidden], #loading[hidden] { display: none; }
+#title .tap svg {
+  width: 44px; height: 44px; fill: var(--md-sys-color-on-primary); position: relative;
+  padding: 14px; border-radius: 50%; background: var(--md-sys-color-primary);
+  box-shadow: var(--md-sys-elevation-3);
+}
+#title .ripple {
+  position: absolute; inset: 0; border-radius: 50%; background: var(--md-sys-color-primary);
+  opacity: .35; animation: ripple 1.6s var(--md-sys-motion-easing-standard) infinite;
+}
+#title .ripple.d2 { animation-delay: .8s; }
+@keyframes ripple { from { transform: scale(.6); opacity: .45; } to { transform: scale(1.7); opacity: 0; } }
+
+/* 一時停止ダイアログ */
+.dlg-icon { width: 24px; height: 24px; fill: var(--md-sys-color-secondary); display: block; margin: 0 auto 16px; }
+.dlg-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+/* おしまい */
+.photo-card { width: 320px; padding: 12px 12px 8px; box-sizing: border-box; text-align: center; }
+.photo-card canvas {
+  width: 296px; height: 259px; border-radius: var(--md-sys-shape-corner-large); display: block;
+  image-rendering: pixelated;
+}
+.photo-card h2 {
+  margin: 10px 0 4px; font: 800 32px/40px var(--md-ref-typeface-brand);
+  color: var(--md-sys-color-primary);
+}

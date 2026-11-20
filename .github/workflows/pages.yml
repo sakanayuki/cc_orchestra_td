@@ -1,0 +1,43 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble site (元素材・加工スクリプト・設定ファイルは公開しない)
+        run: |
+          mkdir -p _site
+          tar -cf - --exclude='./.git' --exclude='./.github' --exclude='./_site' \
+            --exclude='./source' --exclude='*/tools' --exclude='*.md' . | tar -xf - -C _site
+          touch _site/.nojekyll
+          du -sh _site
+          find _site -maxdepth 2 | sort
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
