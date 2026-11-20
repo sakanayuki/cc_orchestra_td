@@ -57,7 +57,7 @@ function startGame() {
   mode = 'play';
   $('#title').hidden = true; $('#hud').hidden = false;
   game.reset(false);
-  mixer.start(C.START_ON_STAGE);
+  mixer.start(C.START_STAGE);
 }
 
 function showPhoto() {
