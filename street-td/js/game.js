@@ -103,9 +103,16 @@ export class Game {
 
   _onStage(name) { return this.slots.some((s) => s.actor && s.actor.arrived && s.occ === name); }
 
+  // その人の好きな楽器が舞台に何体いるか（虹色の人はすべての楽器）
   _matchCount(pref, counts = this._stageCounts()) {
-    if (pref === 'rainbow') return counts.total ? Math.max(1, Math.floor(counts.total / 3)) : 0;
-    return counts[pref];
+    return pref === 'rainbow' ? counts.total : counts[pref];
+  }
+
+  // 好きな楽器の数による倍率：1 体 1、2 体 2、3 体 2.5、4 体 2.75、以降 1 体ごとに +0.25
+  static multiplier(n) {
+    let m = 0;
+    for (let i = 0; i < n; i++) m += C.MULT_STEPS[Math.min(i, C.MULT_STEPS.length - 1)];
+    return m;
   }
 
   // 台の上にいる楽器だけ音を出す。選んでいる楽器は半分の音量で試し聴き。
@@ -248,15 +255,16 @@ export class Game {
         const d = q.stopX - q.x;
         if (Math.abs(d) < 2 || Math.sign(d) !== q.dir) {
           q.state = 'listen'; q.t = 0; q.heartT = rand(0.2, 0.6);
-          const n = Math.max(1, this._matchCount(q.pref, counts));
-          q.listenDur = q.crowd ? 1e9 : Math.min(C.LISTEN_MAX, C.LISTEN_BASE + C.LISTEN_PER * n);
+          q.listenDur = q.crowd ? 1e9 : C.LISTEN_SEC;
         } else q.x += q.dir * C.WALK_SPEED * 0.9 * dt;
       }
       if (q.state === 'listen') {
         q.t += dt; q.heartT -= dt;
         if (q.heartT <= 0) {
           q.heartT = C.HEART_EVERY;
-          if (this.state === 'play') this._emitHeart(q);
+          // 好きな楽器がその瞬間に舞台にいる時だけハートが出る
+          const n = this._matchCount(q.pref, counts);
+          if (this.state === 'play' && n > 0) this._emitHeart(q, Game.multiplier(n));
         }
         if (q.t >= q.listenDur) { q.state = 'wave'; q.t = 0; }
       } else if (q.state === 'wave') {
@@ -267,9 +275,9 @@ export class Game {
     this.people = this.people.filter((q) => q.x > -40 && q.x < C.VW + 40);
   }
 
-  _emitHeart(q) {
+  _emitHeart(q, value) {
     const sx = q.x, sy = q.y - 26 * personScale(q.p);
-    this.hearts.push({ sx, sy, x: sx, y: sy, t: 0, dur: 1.0 + Math.random() * 0.2, cx: sx + rand(-60, 60), cy: rand(140, 260) });
+    this.hearts.push({ sx, sy, x: sx, y: sy, t: 0, value, dur: 1.0 + Math.random() * 0.2, cx: sx + rand(-60, 60), cy: rand(140, 260) });
   }
 
   _emitNote(a, sl) {
@@ -284,7 +292,7 @@ export class Game {
       const t = Math.min(1, h.t), u = 1 - t;
       h.x = u * u * h.sx + 2 * u * t * h.cx + t * t * C.GAUGE_TARGET.x;
       h.y = u * u * h.sy + 2 * u * t * h.cy + t * t * C.GAUGE_TARGET.y;
-      if (h.t >= 1 && !h.done) { h.done = true; this.gauge++; this._emitGauge(); }
+      if (h.t >= 1 && !h.done) { h.done = true; this.gauge += h.value; this._emitGauge(); }
     }
     this.hearts = this.hearts.filter((h) => !h.done);
     for (const n of this.notes) { n.t += dt; n.y -= 22 * dt; n.x += n.vx * dt + Math.sin(n.t * 5) * 0.3; }
@@ -512,7 +520,7 @@ export class Game {
     for (const q of [...this.people].sort((a, b) => a.y - b.y)) this._drawPerson(g, q, counts);
     g.imageSmoothingEnabled = true;
 
-    for (const h of this.hearts) this._drawHeart(g, h.x, h.y, 8 - h.t * 2);
+    for (const h of this.hearts) this._drawHeart(g, h.x, h.y, (8 - h.t * 2) * Math.sqrt(h.value));
     for (const c of this.confetti) {
       g.save(); g.translate(c.x, c.y); g.rotate(c.r); g.fillStyle = c.col;
       g.globalAlpha = Math.min(1, c.life * 2); g.fillRect(-c.w / 2, -c.h / 2, c.w, c.h); g.restore();

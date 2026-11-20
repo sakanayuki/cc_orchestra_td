@@ -68,15 +68,16 @@ export const MAX_LISTENERS = 6;
 export const RAINBOW_RATE = 0.15;
 export const REST_COLOR_RATE = 0.40;   // 待機枠にあって舞台にいない色
 
-export const LISTEN_BASE = 3.0;    // 立ち止まって聴く秒数の基本
-export const LISTEN_PER = 1.5;     // 好きな色の楽器 1 体ごとに延びる秒数
-export const LISTEN_MAX = 9.0;
+export const LISTEN_SEC = 6.0;     // 立ち止まって聴く秒数
+// ハート 1 つの点数の倍率。好きな色の楽器が 1 体増えるごとにこの順で足す（5 体目以降は最後の値）
+export const MULT_STEPS = [1, 1, 0.5, 0.25];
 export const HEART_EVERY = 1.0;    // 聴いている人がハートを出す間隔（秒）
 export const NOTE_EVERY = 1.3;     // 演奏中の楽器が音符を出す間隔（秒、見た目だけ）
 
-// ゲージ 1 回ぶんに必要なハートの数（何回目か順）。7 回で楽器がそろい、8 回目でクリア。
-// 自動で上手に遊ぶシミュレーションで「約 25 秒に 1 回」に揃えた。
-export const HEARTS_PER_FILL = [24, 30, 36, 42, 48, 54, 60, 66];
+// ゲージ 1 回ぶんに必要な点数（何回目か順）。7 回で楽器がそろい、8 回目でクリア。
+// ハート 1 つの点数は倍率（MULT_STEPS）で決まり、楽器が増えるほど入りやすくなるので、後ほど大きくしている。
+// 自動で遊ぶシミュレーションで「約 25 秒に 1 回」に揃えた。
+export const HEARTS_PER_FILL = [28, 44, 60, 78, 96, 112, 128, 146];
 
 export const HINT_FIRST_DELAY = 3.0;
 export const HINT_IDLE = 7.0;
