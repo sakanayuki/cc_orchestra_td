@@ -24,6 +24,11 @@ jobs:
           mkdir -p _site
           tar -cf - --exclude='./.git' --exclude='./.github' --exclude='./_site' \
             --exclude='./source' --exclude='*/tools' --exclude='*.md' . | tar -xf - -C _site
+          # キャッシュ対策：CSS / JS の URL にコミットごとのバージョンを付ける
+          V="${GITHUB_SHA::8}"
+          find _site -name '*.html' -exec sed -i -E "s#(href|src)=\"((css|js)/[^\"?]+\.(css|js))\"#\1=\"\2?v=$V\"#g" {} +
+          find _site -name '*.js' -exec sed -i -E "s#(from '\./[^'?]+\.js)'#\1?v=$V'#g" {} +
+          grep -rn "?v=" _site --include='*.html' --include='*.js' | head -20
           touch _site/.nojekyll
           du -sh _site
           find _site -maxdepth 2 | sort
