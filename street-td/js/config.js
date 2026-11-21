@@ -52,7 +52,7 @@ export const PALETTE = { cols: 6, x0: 50, dx: 52, rows: [452, 518], cellW: 48, c
 export const BASSOON_CELL = 11;
 export const BASSOON_STAGE = { x: 180, y: 384, h: 78 };  // クリア時に出てくる場所
 export const GAUGE_TARGET = { x: 250, y: 32 };           // ハートが飛んでいく先
-export const MAX_PLAY_SLOTS = 5;  // 遊んでいる間の台の上限（クリアで 10 台）。色の配分を考える余地を残すため少なめ
+export const MAX_PLAY_SLOTS = 8;  // 遊んでいる間の台の上限（最初の 1 つ＋仲間 7 体ぶん。クリアで 10 台）
 // クリア時の並び（台の番号 → 楽器）。弦が前、木管が中、金管と打楽器が後ろ。
 export const FINALE_LAYOUT = ['oboe', 'viola', 'cello', 'flute', 'clarinet', 'violin', 'contrabass', 'timpani', 'horn', 'trumpet'];
 
@@ -76,7 +76,7 @@ export const NOTE_EVERY = 1.3;     // 演奏中の楽器が音符を出す間隔
 
 // ゲージ 1 回ぶんに必要な点数（何回目か順）。7 回で楽器がそろい、8 回目でクリア。
 // ハート 1 つの点数は倍率（MULT_STEPS）で決まり、楽器が増えるほど入りやすくなるので、後ほど大きくしている。
-// 自動で遊ぶシミュレーションで、クリアまで「何もしない 約 3 分 10 秒／合わない人に合わせる 約 3 分／
+// 自動で遊ぶシミュレーションで、クリアまで「何もしない 約 3 分 30 秒／合わない人に合わせる 約 2 分 30 秒／
 // 来る人の色に合わせて台の色を配分する 約 1 分 55 秒」になるよう調整（腕前でタイムが縮むように）。
 export const HEARTS_PER_FILL = [32, 51, 69, 90, 110, 129, 147, 168];
 
