@@ -206,13 +206,20 @@ export class Game {
     if (this.spawnT > 0) return;
     this.spawnT = rand(...C.SPAWN_INTERVAL);
     if (this.people.length >= C.MAX_PEOPLE) return;
-    this._spawnPerson(this._pickPref());
+    // 同じ好みの人が数人のグループで来ることがある（家族連れや友だち）
+    const pref = this._pickPref();
+    const size = C.PARTY_SIZES[Math.floor(Math.random() * C.PARTY_SIZES.length)];
+    const dir = Math.random() < 0.5 ? 1 : -1;
+    const lane = C.LANES[Math.floor(Math.random() * C.LANES.length)];
+    for (let i = 0; i < size; i++) {
+      this._spawnPerson(pref, { dir, x: (dir > 0 ? -24 : C.VW + 24) - dir * i * rand(34, 42), y: lane + (i % 2 ? 10 : -6) + rand(-3, 3) });
+    }
   }
 
   _spawnPerson(pref, opts = {}) {
     const dir = opts.dir ?? (Math.random() < 0.5 ? 1 : -1);
     this.people.push({
-      p: randomPerson(), pref, dir, x: dir > 0 ? -24 : C.VW + 24,
+      p: randomPerson(), pref, dir, x: opts.x ?? (dir > 0 ? -24 : C.VW + 24),
       y: opts.y ?? C.LANES[Math.floor(Math.random() * C.LANES.length)] + rand(-6, 6),
       state: 'walk', t: 0, heartT: 0, listenDur: 0, listened: false, stopX: opts.stopX || 0, anim: Math.random(), crowd: !!opts.crowd,
     });
@@ -236,7 +243,7 @@ export class Game {
 
   _updatePeople(dt) {
     const counts = this._stageCounts();
-    const [z0, z1] = C.SLOW_ZONE;
+    const [z0, z1] = C.STAGE_ZONE;
     for (const q of this.people) {
       q.anim += dt;
       const inZone = q.x > z0 && q.x < z1;
@@ -247,8 +254,7 @@ export class Game {
           q.state = 'approach';
           if (!q.crowd) q.stopX = clamp(q.x + q.dir * rand(8, 80), z0 + 6, z1 - 6);
         } else {
-          const slow = inZone && !q.listened && this.state === 'play';
-          q.x += q.dir * (slow ? C.SLOW_SPEED : C.WALK_SPEED) * dt;
+          q.x += q.dir * C.WALK_SPEED * dt;
         }
       }
       if (q.state === 'approach') {
@@ -272,7 +278,7 @@ export class Game {
         if (q.t > 0.8) { q.state = 'walk'; q.listened = true; }
       }
     }
-    this.people = this.people.filter((q) => q.x > -40 && q.x < C.VW + 40);
+    this.people = this.people.filter((q) => (q.dir > 0 ? q.x < C.VW + 40 : q.x > -40));
   }
 
   _emitHeart(q, value) {
@@ -465,7 +471,7 @@ export class Game {
 
   _unmatchedPref() {
     const rest = new Set(this._restGroups());
-    const [z0, z1] = C.SLOW_ZONE;
+    const [z0, z1] = C.STAGE_ZONE;
     for (const q of this.people) {
       if (q.state === 'walk' && !q.listened && q.x > z0 - 60 && q.x < z1 + 60 && rest.has(q.pref)) return q.pref;
     }
@@ -704,7 +710,7 @@ export class Game {
     g.drawImage(sp, -w / 2, -h, w, h);
     g.restore();
     if (!q.listened && q.state !== 'wave') {
-      const inZone = q.x > C.SLOW_ZONE[0] && q.x < C.SLOW_ZONE[1];
+      const inZone = q.x > C.STAGE_ZONE[0] && q.x < C.STAGE_ZONE[1];
       const unmatched = q.state === 'walk' && inZone && this._matchCount(q.pref, counts) === 0;
       const wig = unmatched ? Math.sin(this.time * 9) * 0.22 : 0;
       const sc2 = q.state === 'listen' ? 1 + 0.08 * Math.sin(this.time * 8) : 1;

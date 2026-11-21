@@ -52,21 +52,21 @@ export const PALETTE = { cols: 6, x0: 50, dx: 52, rows: [452, 518], cellW: 48, c
 export const BASSOON_CELL = 11;
 export const BASSOON_STAGE = { x: 180, y: 384, h: 78 };  // クリア時に出てくる場所
 export const GAUGE_TARGET = { x: 250, y: 32 };           // ハートが飛んでいく先
-export const MAX_PLAY_SLOTS = 8;                         // 遊んでいる間の台の上限（クリアで 10 台）
+export const MAX_PLAY_SLOTS = 5;  // 遊んでいる間の台の上限（クリアで 10 台）。色の配分を考える余地を残すため少なめ
 // クリア時の並び（台の番号 → 楽器）。弦が前、木管が中、金管と打楽器が後ろ。
 export const FINALE_LAYOUT = ['oboe', 'viola', 'cello', 'flute', 'clarinet', 'violin', 'contrabass', 'timpani', 'horn', 'trumpet'];
 
 // 通り
 export const LANES = [636, 684];         // 通行人の足元の y
-export const SLOW_ZONE = [28, 332];      // 舞台の前（ゆっくり歩く範囲）
+export const STAGE_ZONE = [28, 332];      // 舞台の前（ここで立ち止まる）
 export const WALK_SPEED = 44;
-export const SLOW_SPEED = 20;
-export const SPAWN_INTERVAL = [2.2, 3.4];
-export const MAX_PEOPLE = 9;
-export const MAX_LISTENERS = 6;
+export const SPAWN_INTERVAL = [5.5, 8];  // グループが来る間隔（秒）
+export const MAX_PEOPLE = 16;
+export const MAX_LISTENERS = 14;
+export const PARTY_SIZES = [2, 3, 4, 5];  // 同じ好みの人が一度に来る人数（この中から等確率）
 
-export const RAINBOW_RATE = 0.15;
-export const REST_COLOR_RATE = 0.40;   // 待機枠にあって舞台にいない色
+export const RAINBOW_RATE = 0.08;
+export const REST_COLOR_RATE = 0.5;  // 待機枠にあって舞台にいない色
 
 export const LISTEN_SEC = 6.0;     // 立ち止まって聴く秒数
 // ハート 1 つの点数の倍率。好きな色の楽器が 1 体増えるごとにこの順で足す（5 体目以降は最後の値）
@@ -76,8 +76,9 @@ export const NOTE_EVERY = 1.3;     // 演奏中の楽器が音符を出す間隔
 
 // ゲージ 1 回ぶんに必要な点数（何回目か順）。7 回で楽器がそろい、8 回目でクリア。
 // ハート 1 つの点数は倍率（MULT_STEPS）で決まり、楽器が増えるほど入りやすくなるので、後ほど大きくしている。
-// 自動で遊ぶシミュレーションで「約 25 秒に 1 回」に揃えた。
-export const HEARTS_PER_FILL = [28, 44, 60, 78, 96, 112, 128, 146];
+// 自動で遊ぶシミュレーションで、クリアまで「何もしない 約 3 分 10 秒／合わない人に合わせる 約 3 分／
+// 来る人の色に合わせて台の色を配分する 約 1 分 55 秒」になるよう調整（腕前でタイムが縮むように）。
+export const HEARTS_PER_FILL = [32, 51, 69, 90, 110, 129, 147, 168];
 
 export const HINT_FIRST_DELAY = 3.0;
 export const HINT_IDLE = 7.0;
