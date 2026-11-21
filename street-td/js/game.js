@@ -71,6 +71,7 @@ export class Game {
     const sl = this.slots[idx];
     if (!sl.active || !this.palette.includes(name)) return;
     if (sl.occ === name && sl.actor && sl.actor.arrived) return;
+    if (sl.actor && !sl.actor.arrived) return; // 歩いている途中の台には置けない
     if (sl.actor) this._retire(sl.actor);
     const cp = this.cellPos(this.palette.indexOf(name));
     const a = this._actor(name, cp.x, cp.y, this.cellScale(name));
@@ -175,6 +176,9 @@ export class Game {
     for (const gh of this.ghosts) gh.t += dt;
     this.ghosts = this.ghosts.filter((gh) => gh.t < 0.6);
     for (const k of Object.keys(this.cellPop)) { this.cellPop[k] -= dt * 2.5; if (this.cellPop[k] <= 0) delete this.cellPop[k]; }
+
+    // 念のため：加入中の楽器がどの台にもいなくなったら、加入を終わったことにする
+    if (this.unlocking && !this.slots.some((s) => s.actor === this.unlockActor)) this.unlocking = false;
 
     if (this.state === 'play') {
       this._spawn(dt);
@@ -355,6 +359,7 @@ export class Game {
     const a = this._actor(reward, fromLeft ? -40 : C.VW + 40, 380, 1);
     a.arrived = false;
     sl.occ = reward; sl.actor = a;
+    this.unlockActor = a;
     const dist = Math.abs(sl.x - a.x) + 40;
     this._walkTo(a, sl.x, sl.y, sl.s, 0.9 + dist / 200, Math.max(2, Math.round(dist / 45)), () => {
       a.arrived = true; sl.glow = 1;
