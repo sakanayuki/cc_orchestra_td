@@ -8,7 +8,7 @@
 <title>まちかどオーケストラ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&text=%E3%81%BE%E3%81%A1%E3%81%8B%E3%81%A9%E3%82%AA%E3%83%BC%E3%82%B1%E3%82%B9%E3%83%88%E3%83%A9%E3%81%8A%E3%81%97%E3%81%84%E3%81%A4%E3%81%A5%E3%81%91%E3%82%8B%E3%82%BF%E3%82%A4%E3%83%AB%E3%81%B80123456789%3A.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&text=%E3%81%BE%E3%81%A1%E3%81%8B%E3%81%A9%E3%82%AA%E3%83%BC%E3%82%B1%E3%82%B9%E3%83%88%E3%83%A9%E3%81%8A%E3%81%97%E3%81%84%E3%81%A4%E3%81%A5%E3%81%91%E3%82%8B%E3%82%BF%E3%82%A4%E3%83%AB%E3%81%B80123456789%3A.%E3%81%8D%E3%82%8D%E3%81%8F%E3%82%92%E3%81%99%E3%82%84%E3%82%81">
 <link rel="stylesheet" href="css/m3.css">
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -53,9 +53,22 @@
     <div id="pausedlg" class="m3-scrim" hidden>
       <div class="m3-dialog" role="dialog" aria-modal="true">
         <svg class="dlg-icon" viewBox="0 0 24 24"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+        <div class="dlg-sub"><button class="m3-button text danger icon" id="openReset"><svg class="ic" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>きろくをけす</button></div>
         <div class="dlg-actions">
           <button class="m3-button text" id="toTitle">タイトルへ</button>
           <button class="m3-button filled" id="resume">つづける</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 最高記録を消す確認（保護者向け） -->
+    <div id="resetdlg" class="m3-scrim" hidden>
+      <div class="m3-dialog" role="alertdialog" aria-modal="true">
+        <svg class="dlg-icon crown" viewBox="0 0 24 24"><path d="M5 16 3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg>
+        <div class="dlg-best"><div id="resetbest" class="m3-chip big"><svg class="ic crown" viewBox="0 0 24 24"><path d="M5 16 3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/></svg><span class="t"></span></div></div>
+        <div class="dlg-actions">
+          <button class="m3-button text" id="cancelReset">やめる</button>
+          <button class="m3-button filled danger" id="doReset">けす</button>
         </div>
       </div>
     </div>
