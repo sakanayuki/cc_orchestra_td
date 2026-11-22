@@ -123,3 +123,12 @@ html, body {
   animation: newrec 0.9s var(--md-sys-motion-easing-emphasized) infinite alternate;
 }
 @keyframes newrec { from { transform: scale(1); } to { transform: scale(1.12); box-shadow: 0 0 0 6px rgba(201,154,0,.25); } }
+
+/* 記録を消す */
+.dlg-sub { display: flex; justify-content: center; margin: -4px 0 12px; }
+.dlg-best { display: flex; justify-content: center; margin-bottom: 20px; }
+.dlg-best .m3-chip { border: 0; background: var(--md-sys-color-surface-container-highest); }
+.dlg-icon.crown { width: 32px; height: 32px; }
+#titlebest { pointer-events: auto; touch-action: none; position: relative; }
+#titlebest.holding { box-shadow: 0 0 0 3px var(--md-sys-color-primary); transition: box-shadow 2s linear; }
+.m3-button[hidden] { display: none; }

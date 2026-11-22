@@ -143,14 +143,50 @@ pauseBtn.addEventListener('contextmenu', (e) => e.preventDefault());
 
 function openPause() {
   paused = true; mixer.suspend();
+  $('#openReset').hidden = !loadBest();
   $('#pausedlg').hidden = false;
 }
 $('#resume').addEventListener('click', () => { $('#pausedlg').hidden = true; paused = false; mixer.resume(); });
 $('#toTitle').addEventListener('click', () => { $('#pausedlg').hidden = true; showTitle(); mixer.resume(); });
 
+// ---------- 最高記録を消す（保護者向け：一時停止ダイアログか、タイトルの記録チップの 2 秒長押しから） ----------
+let resetFrom = null;
+function openReset(from) {
+  const b = loadBest();
+  if (!b) return;
+  resetFrom = from;
+  $('#resetbest .t').textContent = fmt(b);
+  $('#resetdlg').hidden = false;
+}
+function closeReset() {
+  $('#resetdlg').hidden = true;
+  if (resetFrom === 'pause') $('#pausedlg').hidden = false;
+  resetFrom = null;
+}
+$('#openReset').addEventListener('click', () => { if (!loadBest()) return; $('#pausedlg').hidden = true; openReset('pause'); });
+$('#cancelReset').addEventListener('click', closeReset);
+$('#doReset').addEventListener('click', () => {
+  try { localStorage.removeItem(BEST_KEY); } catch {}
+  showBest($('#hudbest')); showBest($('#titlebest'));
+  closeReset();
+});
+const tb = $('#titlebest');
+let tbTimer = 0, tbLong = false;
+const tbCancel = () => { clearTimeout(tbTimer); tb.classList.remove('holding'); };
+tb.addEventListener('pointerdown', (e) => {
+  e.preventDefault(); e.stopPropagation();
+  tbLong = false; tb.classList.add('holding');
+  tbTimer = setTimeout(() => { tbLong = true; tbCancel(); openReset('title'); }, 2000);
+});
+tb.addEventListener('pointerup', (e) => {
+  e.stopPropagation(); tbCancel();
+  if (!tbLong && mode === 'title' && $('#resetdlg').hidden) { mixer.unlock(); if (ready) startGame(); else wantStart = true; }
+});
+for (const ev of ['pointerleave', 'pointercancel']) tb.addEventListener(ev, tbCancel);
+
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { mixer.suspend(); }
-  else if ($('#pausedlg').hidden) { mixer.resume(); }
+  else if (!paused) { mixer.resume(); }
 });
 document.addEventListener('contextmenu', (e) => e.preventDefault());
 
